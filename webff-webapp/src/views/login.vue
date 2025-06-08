@@ -65,12 +65,7 @@
 
           <router-link to="/reg">
             <!-- 注册按钮 -->
-            <el-button
-              native-type="subit"
-              size="large"
-              class="w-full mt-3"
-              :loading="loading"
-            >
+            <el-button native-type="subit" size="large" class="w-full mt-3">
               注册
             </el-button>
           </router-link>
@@ -86,16 +81,22 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { User, Lock, Apple } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import axios from "axios";
 
-const form = ref({
+// form 数据
+const form = reactive({
+  // 用户名
   username: "",
+  // 密码
   password: "",
+  // 记住我
   remember: false,
 });
 
+// 表单验证规则
 const rules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [
@@ -104,21 +105,30 @@ const rules = {
   ],
 };
 
+// 加载状态
 const loading = ref(false);
+// DOM 引用
 const loginForm = ref(null);
 
 const handleLogin = () => {
   loginForm.value.validate((valid) => {
     if (valid) {
       loading.value = true;
-      // 模拟登录请求
-      setTimeout(() => {
+      axios.post("/auth/login", form).then((res) => {
         loading.value = false;
-        ElMessage({
-          message: "登录成功",
-          type: "success",
-        });
-      }, 1500);
+        if (res.data.success) {
+          ElMessage({
+            message: "登录成功",
+            type: "success",
+          });
+          // 这里可以进行路由跳转或其他操作
+        } else {
+          ElMessage({
+            message: res.data.message || "登录失败",
+            type: "error",
+          });
+        }
+      });
     }
   });
 };
