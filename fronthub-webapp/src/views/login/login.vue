@@ -85,6 +85,9 @@ import { ref, reactive } from "vue";
 import { User, Lock, Apple } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // form 数据
 const form = reactive({
@@ -111,6 +114,7 @@ const loading = ref(false);
 const loginForm = ref(null);
 
 const handleLogin = () => {
+  router.push("/home");
   loginForm.value.validate((valid) => {
     if (valid) {
       loading.value = true;
